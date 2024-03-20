@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 
 
 @RestController
@@ -49,10 +48,10 @@ public class ProductController {
 
     }
 
-    // Endpoint to get top-selling products based on the number of units sold
-    @GetMapping("/top-selling/{limit}")
-    public ResponseEntity getTopSellingProducts(@PathVariable int limit) {
-        return ResponseEntity.ok(productService.getTopSellingProducts(limit));
+    // Endpoint to get top-selling products for a specified category
+    @GetMapping("/top-selling/{category}")
+    public ResponseEntity getTopSellingProducts(@PathVariable String category) {
+        return ResponseEntity.ok(productService.getTopSellingProducts(category));
     }
 
     // Endpoint to rate a product

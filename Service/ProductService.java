@@ -2,6 +2,7 @@ package com.example.ecommerce.Service;
 
 import com.example.ecommerce.Exception.InvalidRatingException;
 import com.example.ecommerce.Exception.ProductNotFoundException;
+import com.example.ecommerce.Model.Category;
 import com.example.ecommerce.Model.Product;
 import com.example.ecommerce.Model.User;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,19 @@ import java.util.List;
 public class ProductService {
 
     ArrayList<Product> products = new ArrayList<>();
-
+    private final CategoryService categoryService;
     public ArrayList<Product> getAllProducts() {
         return products;
     }
 
     public void addProduct(Product product) {
+        categoryService.getCategoryById(product.getCategoryId());
         products.add(product);
     }
 
     public void updateProduct(Product updatedProduct, String id) {
         Product product = getProductById(id);
+        categoryService.getCategoryById(updatedProduct.getCategoryId());
         products.set(products.indexOf(product), updatedProduct);
     }
 
@@ -35,14 +38,25 @@ public class ProductService {
         products.remove(product);
     }
 
-    // Get top-selling products
-    public List<Product> getTopSellingProducts(int limit) {
-        products.sort(Comparator.comparingInt(Product::getUnitsSold).reversed());
+    // Get top-selling products for a specified category
+    public List<Product> getTopSellingProducts(String categoryName) {
+        List<Product> topSellingProducts = new ArrayList<>();
 
-        if(limit > products.size())
-            return products;
+        for (Product product : products) {
+            Category category = categoryService.getCategoryById(product.getCategoryId());
+            if (category.getName().equalsIgnoreCase(categoryName))
+                topSellingProducts.add(product);
+        }
 
-        return products.subList(0, limit);
+        if(topSellingProducts.isEmpty())
+            throw new ProductNotFoundException("No products found for category " + categoryName);
+
+        topSellingProducts.sort(Comparator.comparingInt(Product::getUnitsSold).reversed());
+
+        if(topSellingProducts.size() > 20)
+            return topSellingProducts.subList(0, 20);
+
+        return topSellingProducts;
     }
 
     // Rate a product

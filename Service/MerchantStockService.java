@@ -3,25 +3,33 @@ package com.example.ecommerce.Service;
 import com.example.ecommerce.Exception.MerchantStockNotFoundException;
 import com.example.ecommerce.Model.Merchant;
 import com.example.ecommerce.Model.MerchantStock;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class MerchantStockService {
 
     ArrayList<MerchantStock> merchantStocks = new ArrayList<>();
+    private final MerchantService merchantService;
+    private final ProductService productService;
 
     public ArrayList<MerchantStock> getAllMerchantStocks() {
         return merchantStocks;
     }
 
     public void addMerchantStock(MerchantStock merchantStock) {
+        merchantService.getMerchantById(merchantStock.getMerchantId());
+        productService.getProductById(merchantStock.getProductId());
         merchantStocks.add(merchantStock);
     }
 
     public void updateMerchantStock(MerchantStock updatedMerchantStock, String id) {
         MerchantStock merchantStock = getMerchantStockById(id);
+        merchantService.getMerchantById(updatedMerchantStock.getMerchantId());
+        productService.getProductById(updatedMerchantStock.getProductId());
         merchantStocks.set(merchantStocks.indexOf(merchantStock), updatedMerchantStock);
     }
     public void deleteMerchantStock(String id) {

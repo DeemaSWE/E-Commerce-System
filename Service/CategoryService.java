@@ -36,4 +36,5 @@ public class CategoryService {
         }
         throw new CategoryNotFoundException("Category with id " + id + " not found");
     }
+
 }
